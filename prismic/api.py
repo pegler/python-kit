@@ -24,7 +24,7 @@ from .cache import ShelveCache
 log = logging.getLogger(__name__)
 
 
-def get(url, access_token=None, cache=ShelveCache()):
+def get(url, access_token=None, cache=None):
     """Fetches the prismic api JSON.
     Returns :class:`Api <Api>` object.
 
@@ -34,11 +34,13 @@ def get(url, access_token=None, cache=ShelveCache()):
     return Api(_get_json(url, access_token=access_token, cache=cache), access_token, cache)
 
 
-def _get_json(url, params=dict(), access_token=None, cache=ShelveCache()):
+def _get_json(url, params=dict(), access_token=None, cache=None):
     full_params = params.copy()
     if access_token is not None:
         full_params["access_token"] = access_token
     full_url = url if len(full_params) == 0 else (url + "?" + urllib.urlencode(full_params, doseq=1))
+    if cache is None:
+        cache = ShelveCache()
     cached = cache.get(full_url)
     if cached is not None:
         return cached
